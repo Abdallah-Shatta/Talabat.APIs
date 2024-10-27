@@ -5,6 +5,12 @@ VisualStudioVersion = 17.10.35013.160
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Talabat.APIs", "Talabat.APIs\Talabat.APIs.csproj", "{0497F464-D60D-40C1-91BA-239A1E6181B2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Talabat.Service", "Talabat.Service\Talabat.Service.csproj", "{12C66A1D-1ACF-49F7-85A6-179D7C3CC5D5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Talabat.Respository", "Talabat.Respository\Talabat.Respository.csproj", "{ABCCF1CA-D98C-414C-9941-9F77A416023A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Talabat.Core", "Talabat.Core\Talabat.Core.csproj", "{1BD7AC65-85BA-4341-A0C9-7A16B518B98C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +21,18 @@ Global
 		{0497F464-D60D-40C1-91BA-239A1E6181B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0497F464-D60D-40C1-91BA-239A1E6181B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0497F464-D60D-40C1-91BA-239A1E6181B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{12C66A1D-1ACF-49F7-85A6-179D7C3CC5D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12C66A1D-1ACF-49F7-85A6-179D7C3CC5D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12C66A1D-1ACF-49F7-85A6-179D7C3CC5D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12C66A1D-1ACF-49F7-85A6-179D7C3CC5D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ABCCF1CA-D98C-414C-9941-9F77A416023A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ABCCF1CA-D98C-414C-9941-9F77A416023A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ABCCF1CA-D98C-414C-9941-9F77A416023A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ABCCF1CA-D98C-414C-9941-9F77A416023A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1BD7AC65-85BA-4341-A0C9-7A16B518B98C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1BD7AC65-85BA-4341-A0C9-7A16B518B98C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1BD7AC65-85BA-4341-A0C9-7A16B518B98C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1BD7AC65-85BA-4341-A0C9-7A16B518B98C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

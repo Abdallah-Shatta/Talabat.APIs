@@ -1,8 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using Talabat.APIs.Mapping_Profile;
-using Talabat.Core.IRepositories;
+using Talabat.APIs.Extensions;
+using Talabat.APIs.Middlewares;
 using Talabat.Respository.Data;
-using Talabat.Respository.Repositories;
 
 namespace Talabat.APIs
 {
@@ -23,13 +22,9 @@ namespace Talabat.APIs
             // Register the injected DbContext to the service container
             builder.Services.AddDbContext<StoreDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("ConStr")));
 
-            // Dynamically Register the service of the injected GenericRepo with its IGenericRepo
-            builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
-            // Register the AutoMapper Profile
-            //builder.Services.AddAutoMapper(m => m.AddProfile(new MappingProfile())); => Readable Way
-            builder.Services.AddAutoMapper(typeof(MappingProfile)); // => Easy Way
-
+            // Registering the app Services from extension method
+            builder.Services.AddApplicationServices();
             #endregion
 
             var app = builder.Build();
@@ -54,12 +49,18 @@ namespace Talabat.APIs
             #endregion
 
             #region Configure Middlewares
+            // Handling Server Error (Exceptions)
+            app.UseMiddleware<ExceptionMiddleware>();
+
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            // Handling Not Found Endpoint Middleware
+            app.UseStatusCodePagesWithReExecute("/errors/{0}");
 
             app.UseHttpsRedirection();
 

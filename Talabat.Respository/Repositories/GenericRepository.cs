@@ -27,17 +27,20 @@ namespace Talabat.Respository.Repositories
 
         public async Task<IReadOnlyList<T>> GetAllWithSpecsAsync(ISpecifications<T> spec)
         {
-            return await GetQuery(spec).ToListAsync();
+            return await GetSpecifiedQuery(spec).ToListAsync();
         }
 
         public async Task<T?> GetWithSpecsAsync(ISpecifications<T> spec)
         {
-            return await GetQuery(spec).FirstOrDefaultAsync();
+            return await GetSpecifiedQuery(spec).FirstOrDefaultAsync();
         }
-
+        public async Task<int> GetCountAsync(ISpecifications<T> spec)
+        {
+            return await GetSpecifiedQuery(spec).CountAsync();
+        }
         // Private method to encapsulate the generation of the specified query
         // with SpecificationHandler class by its BuildQuery static method
-        private IQueryable<T> GetQuery(ISpecifications<T> spec)
+        private IQueryable<T> GetSpecifiedQuery(ISpecifications<T> spec)
         {
             // BuildQuery takes initialQuery as first parameter which is [_dbContext.Set<T>()]
             return SpecificationsHandler<T>.BuildQuery(_dbContext.Set<T>(), spec);

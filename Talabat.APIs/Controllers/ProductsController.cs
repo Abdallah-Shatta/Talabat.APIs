@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Linq.Expressions;
 using Talabat.APIs.DTOs;
 using Talabat.APIs.Errors;
+using Talabat.APIs.Helpers;
 using Talabat.Core.Entities;
 using Talabat.Core.IRepositories;
 using Talabat.Core.Specifications;
@@ -33,7 +34,8 @@ namespace Talabat.APIs.Controllers
             var includes = new List<Expression<Func<Product, object>>>() { p => p.Brand, p => p.Category };
 
             Expression<Func<Product, bool>> filter = p => (!specparams.BrandId.HasValue || p.BrandId == specparams.BrandId) &&
-                                                          (!specparams.CategoryId.HasValue || p.CategoryId == specparams.CategoryId);
+                                                          (!specparams.CategoryId.HasValue || p.CategoryId == specparams.CategoryId) &&
+                                                          (string.IsNullOrEmpty(specparams.Search) || p.Name.ToLower().Contains(specparams.Search));
 
             var spec = new Specifications<Product>(filter, includes);
 
@@ -62,7 +64,13 @@ namespace Talabat.APIs.Controllers
 
             var products = await _productRepo.GetAllWithSpecsAsync(spec);
 
-            return Ok(_mapper.Map<IReadOnlyList<Product>, IReadOnlyList<ProductToReturnDto>>(products));
+            var data = _mapper.Map<IReadOnlyList<Product>, IReadOnlyList<ProductToReturnDto>>(products);
+
+            var countSepc = new ProductsCountSpecifications(specparams);
+
+            var count = await _productRepo.GetCountAsync(countSepc);
+
+            return Ok(new Pagination<ProductToReturnDto>(specparams.PageIndex, specparams.PageSize, count, data));
         }
 
         [HttpGet("{id}")]

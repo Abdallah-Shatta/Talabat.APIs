@@ -7,6 +7,11 @@ namespace Talabat.Core.Specifications
     {
         public Expression<Func<T, bool>> Filter { get; set; } = null!;
         public List<Expression<Func<T, object>>> Includes { get; set; } = new List<Expression<Func<T, object>>>();
+        public Expression<Func<T, object>> OrderBy { get; set; } = null!;
+        public Expression<Func<T, object>> OrderByDesc { get; set; } = null!;
+        public int Skip { get; set; }
+        public int Take { get; set; }
+        public bool IsPaginationAllowed { get; set; }
 
         public Specifications() 
         {
@@ -28,5 +33,12 @@ namespace Talabat.Core.Specifications
             Filter = filter;
             Includes = includes;
         }
+
+        public void ApplyPagination(int skip, int take)
+        {
+            IsPaginationAllowed = true;
+            Skip = skip;
+            Take = take;
+        } 
     }
 }

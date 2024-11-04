@@ -14,6 +14,9 @@ namespace Talabat.APIs.Extensions
             // Dynamically Register the service of the injected GenericRepo with its IGenericRepo
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
+            // Register to BasketRepository service
+            services.AddScoped<IBasketRepository, BasketRepository>();
+
             // Register the AutoMapper Profile
             // builder.Services.AddAutoMapper(m => m.AddProfile(new MappingProfile())); => Readable Way
             services.AddAutoMapper(typeof(MappingProfile)); // => Easy Way

@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using StackExchange.Redis;
 using Talabat.APIs.Extensions;
 using Talabat.APIs.Middlewares;
 using Talabat.Respository.Data;
@@ -22,6 +23,12 @@ namespace Talabat.APIs
             // Register the injected DbContext to the service container
             builder.Services.AddDbContext<StoreDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("ConStr")));
 
+            // Register the redis server database
+            builder.Services.AddSingleton((Func<IServiceProvider, IConnectionMultiplexer>)(serviceProvider =>
+            {
+                var connection = builder.Configuration.GetConnectionString("Redis");
+                return ConnectionMultiplexer.Connect(connection);
+            }));
 
             // Registering the app Services from extension method
             builder.Services.AddApplicationServices();

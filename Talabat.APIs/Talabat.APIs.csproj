@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Talabat.Respository\Talabat.Respository.csproj" />
+    <ProjectReference Include="..\Talabat.Service\Talabat.Service.csproj" />
   </ItemGroup>
 
   <ItemGroup>

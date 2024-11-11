@@ -3,15 +3,13 @@ using Talabat.APIs.Errors;
 using Talabat.APIs.Mapping_Profile;
 using Talabat.APIs.Middlewares;
 using Talabat.Core.IRepositories;
-using Talabat.Core.IServices;
 using Talabat.Core.IUnitOfWork;
 using Talabat.Respository.Repositories;
 using Talabat.Respository.UnitOfWork;
-using Talabat.Service;
 
 namespace Talabat.APIs.Extensions
 {
-    public static class ApplicationServicesExtension
+    public static class ApplicationExtension
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
@@ -19,9 +17,6 @@ namespace Talabat.APIs.Extensions
             /// services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             /// After Implementing the unit of work i don't need to register the generic repo service
             /// because it will be injected in a higher layer (Unit of work)
-
-            // Register to the business logic services
-            services.AddScoped(typeof(IOrderService), typeof(OrderService));
 
             // Register to the unit of work service
             services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));

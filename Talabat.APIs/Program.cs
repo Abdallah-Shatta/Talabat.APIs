@@ -6,6 +6,7 @@ using Talabat.APIs.Middlewares;
 using Talabat.Core.Entities.Identity;
 using Talabat.Respository.Data;
 using Talabat.Respository.Identity;
+using Talabat.Service.Extensions;
 
 namespace Talabat.APIs
 {
@@ -38,6 +39,7 @@ namespace Talabat.APIs
 
             // Registering the app Services from extension method
             builder.Services.AddApplicationServices();
+            builder.Services.AddServices();
 
             // Add Identity Configurations
             builder.Services.AddIdentity<AppUser, IdentityRole>()

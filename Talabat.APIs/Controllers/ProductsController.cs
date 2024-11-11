@@ -1,74 +1,33 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using System.Linq.Expressions;
 using Talabat.APIs.DTOs;
 using Talabat.APIs.Errors;
 using Talabat.APIs.Helpers;
 using Talabat.Core.Entities;
-using Talabat.Core.IRepositories;
+using Talabat.Core.IServices;
 using Talabat.Core.Specifications;
 
 namespace Talabat.APIs.Controllers
 {
     public class ProductsController : BaseAPIController
     {
-        private readonly IGenericRepository<Product> _productRepo;
-        private readonly IGenericRepository<ProductBrand> _brandRepo;
-        private readonly IGenericRepository<ProductCategory> _categoryRepo;
+        private readonly IProductService _productService;
         private readonly IMapper _mapper;
 
-        public ProductsController(IGenericRepository<Product> productRepo,
-            IGenericRepository<ProductBrand> brandRepo,
-            IGenericRepository<ProductCategory> categoryRepo,
-            IMapper mapper)
+        public ProductsController(IProductService productService, IMapper mapper)
         {
-            _productRepo = productRepo;
-            _brandRepo = brandRepo;
-            _categoryRepo = categoryRepo;
+            _productService = productService;
             _mapper = mapper;
         }
 
         [HttpGet]
         public async Task<ActionResult<IReadOnlyList<ProductToReturnDto>>> GetProducts([FromQuery] ProductSpecificationsParams specparams)
         {
-            var includes = new List<Expression<Func<Product, object>>>() { p => p.Brand, p => p.Category };
-
-            Expression<Func<Product, bool>> filter = p => (!specparams.BrandId.HasValue || p.BrandId == specparams.BrandId) &&
-                                                          (!specparams.CategoryId.HasValue || p.CategoryId == specparams.CategoryId) &&
-                                                          (string.IsNullOrEmpty(specparams.Search) || p.Name.ToLower().Contains(specparams.Search));
-
-            var spec = new Specifications<Product>(filter, includes);
-
-            if (!string.IsNullOrEmpty(specparams.Sort))
-            {
-                switch (specparams.Sort)
-                {
-                    case "priceAsc":
-                        spec.OrderBy = p => p.Price;
-                        break;
-                    case "priceDesc":
-                        spec.OrderByDesc = p => p.Price;
-                        break;
-                    default:
-                        spec.OrderBy = p => p.Name;
-                        break;
-                }
-            }
-            else
-                spec.OrderBy = p => p.Name;
-
-            // total products = 18
-            // pageSize = 5
-            // pageIndex = 3
-            spec.ApplyPagination((specparams.PageIndex - 1) * specparams.PageSize, specparams.PageSize);
-
-            var products = await _productRepo.GetAllWithSpecsAsync(spec);
+            var products = await _productService.GetProductsAsync(specparams);
 
             var data = _mapper.Map<IReadOnlyList<Product>, IReadOnlyList<ProductToReturnDto>>(products);
 
-            var countSepc = new ProductsCountSpecifications(specparams);
-
-            var count = await _productRepo.GetCountAsync(countSepc);
+            var count = await _productService.GetCountAsync(specparams);
 
             return Ok(new Pagination<ProductToReturnDto>(specparams.PageIndex, specparams.PageSize, count, data));
         }
@@ -76,13 +35,7 @@ namespace Talabat.APIs.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<ProductToReturnDto>> GetProduct(int id)
         {
-            var includes = new List<Expression<Func<Product, object>>>() { p => p.Brand, p => p.Category };
-
-            Expression<Func<Product, bool>> filter = p => p.Id == id;
-
-            var spec = new Specifications<Product>(filter, includes);
-
-            var product = await _productRepo.GetWithSpecsAsync(spec);
+            var product = await _productService.GetProductAsync(id);
 
             if (product is null)
                 return NotFound(new ApiResponse(404));
@@ -93,13 +46,13 @@ namespace Talabat.APIs.Controllers
         [HttpGet("brands")]
         public async Task<ActionResult<IReadOnlyList<ProductBrand>>> GetBrands()
         {
-            return Ok(await _brandRepo.GetAllAsync());
+            return Ok(await _productService.GetBrandsAsync());
         }
 
         [HttpGet("categories")]
         public async Task<ActionResult<IReadOnlyList<ProductCategory>>> GetCategories()
         {
-            return Ok(await _categoryRepo.GetAllAsync());
+            return Ok(await _productService.GetCategoriesAsync());
         }
     }
 }

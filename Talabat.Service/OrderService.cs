@@ -1,8 +1,10 @@
-﻿using Talabat.Core.Entities;
+﻿using System.Linq.Expressions;
+using Talabat.Core.Entities;
 using Talabat.Core.Entities.OrderAggregate;
 using Talabat.Core.IRepositories;
 using Talabat.Core.IServices;
 using Talabat.Core.IUnitOfWork;
+using Talabat.Core.Specifications;
 
 namespace Talabat.Service
 {
@@ -51,14 +53,32 @@ namespace Talabat.Service
             return rowsAffected <= 0 ? null : order;
         }
 
-        public Task<Order> GetOrderByIdForUserAsync(int orderId, string buyerEmail)
+        public async Task<IReadOnlyList<Order>> GetOrdersForUserAsync(string buyerEmail)
         {
-            throw new NotImplementedException();
+            var orderRepo = _unitOfWork.GetRepository<Order>();
+
+            Expression<Func<Order, bool>> filters = o => o.BuyerEmail == buyerEmail;
+            List<Expression<Func<Order, object>>> includes = [o => o.DeliveryMethod, o => o.Items];
+            var spec = new Specifications<Order>(filters, includes);
+            spec.OrderByDesc = o => o.OrderDate;
+
+            var orders = await orderRepo.GetAllWithSpecsAsync(spec);
+            return orders;
         }
 
-        public Task<IReadOnlyList<Order>> GetOrdersForUserAsync(string buyerEmail)
+        public async Task<Order?> GetOrderByIdForUserAsync(int orderId, string buyerEmail)
         {
-            throw new NotImplementedException();
+            var orderRepo = _unitOfWork.GetRepository<Order>();
+
+            Expression<Func<Order, bool>> filters = o => o.Id == orderId && o.BuyerEmail == buyerEmail;
+            List<Expression<Func<Order, object>>> includes = [o => o.DeliveryMethod, o => o.Items];
+            var spec = new Specifications<Order>(filters, includes);
+
+            var order = await orderRepo.GetWithSpecsAsync(spec);
+            return order is null ? null : order;
         }
+
+        public async Task<IReadOnlyList<DeliveryMethod>> GetDeliveryMethodsAsync()
+            => await _unitOfWork.GetRepository<DeliveryMethod>().GetAllAsync();
     }
 }

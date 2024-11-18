@@ -22,20 +22,20 @@ namespace Talabat.Service
             var authClaims = new List<Claim>
             {
                  new (ClaimTypes.GivenName, user.DisplayName),
-                 new (ClaimTypes.Email, user.Email)
+                 new (ClaimTypes.Email, user.Email!)
             };
 
             var userRoles = await userManager.GetRolesAsync(user);
             foreach (var role in userRoles)
                 authClaims.Add(new Claim(ClaimTypes.Role, role));
 
-            var authKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:SecretKey"]));
+            var authKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:SecretKey"]!));
 
             var token = new JwtSecurityToken(
                     issuer: _configuration["JWT:ValidIssuer"],
                     audience: _configuration["JWT:ValidAudience"],
                     claims: authClaims,
-                    expires: DateTime.UtcNow.AddDays(double.Parse(_configuration["JWT:DurationInDays"])),
+                    expires: DateTime.UtcNow.AddDays(double.Parse(_configuration["JWT:DurationInDays"]!)),
                     signingCredentials: new SigningCredentials(authKey, SecurityAlgorithms.HmacSha256)
             );
 

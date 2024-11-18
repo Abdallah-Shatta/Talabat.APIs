@@ -1,9 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using StackExchange.Redis;
 using Talabat.APIs.Errors;
 using Talabat.APIs.Mapping_Profile;
 using Talabat.APIs.Middlewares;
 using Talabat.Core.IRepositories;
 using Talabat.Core.IUnitOfWork;
+using Talabat.Respository.Data;
 using Talabat.Respository.Repositories;
 using Talabat.Respository.UnitOfWork;
 
@@ -11,12 +14,22 @@ namespace Talabat.APIs.Extensions
 {
     public static class ApplicationExtension
     {
-        public static IServiceCollection AddApplicationServices(this IServiceCollection services)
+        public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
         {
             /// Dynamically Register the service of the injected GenericRepo with its IGenericRepo
             /// services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             /// After Implementing the unit of work i don't need to register the generic repo service
             /// because it will be injected in a higher layer (Unit of work)
+            
+            // Register the injected DbContext to the service container
+            services.AddDbContext<StoreDbContext>(options => options.UseSqlServer(configuration["ConnectionStrings:ConStr"]));
+
+            // Register the redis server database
+            services.AddSingleton((Func<IServiceProvider, IConnectionMultiplexer>)(serviceProvider =>
+                    {
+                        var connection = configuration["ConnectionStrings:Redis"];
+                        return ConnectionMultiplexer.Connect(connection!);
+                    }));
 
             // Register to the unit of work service
             services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
@@ -33,8 +46,8 @@ namespace Talabat.APIs.Extensions
             {
                 config.InvalidModelStateResponseFactory = context =>
                 {
-                    var errors = context.ModelState.Where(p => p.Value.Errors.Count() > 0)
-                                                   .SelectMany(p => p.Value.Errors)
+                    var errors = context.ModelState.Where(p => p.Value!.Errors.Count() > 0)
+                                                   .SelectMany(p => p.Value!.Errors)
                                                    .Select(e => e.ErrorMessage)
                                                    .ToList();
 

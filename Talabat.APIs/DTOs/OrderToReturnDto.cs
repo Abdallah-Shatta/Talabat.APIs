@@ -7,7 +7,7 @@ namespace Talabat.APIs.DTOs
         public int Id { get; set; }
         public string BuyerEmail { get; set; }
         public DateTimeOffset OrderDate { get; set; }
-        public OrderStatus Status { get; set; }
+        public string Status { get; set; }
         public Address ShippingAddress { get; set; }
         public string DeliveryMethod { get; set; }
         public decimal DeliveryMethodCost { get; set; }

@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using StackExchange.Redis;
 using Talabat.APIs.Extensions;
 using Talabat.APIs.Middlewares;
 using Talabat.Core.Entities.Identity;
@@ -24,26 +23,10 @@ namespace Talabat.APIs
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            // Register the injected DbContext to the service container
-            builder.Services.AddDbContext<StoreDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("ConStr")));
-
-            // Register the injected IdentityDbContext to the service container
-            builder.Services.AddDbContext<AppIdentityDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConStr")));
-
-            // Register the redis server database
-            builder.Services.AddSingleton((Func<IServiceProvider, IConnectionMultiplexer>)(serviceProvider =>
-            {
-                var connection = builder.Configuration.GetConnectionString("Redis");
-                return ConnectionMultiplexer.Connect(connection);
-            }));
-
-            // Registering the app Services from extension method
-            builder.Services.AddApplicationServices();
-            builder.Services.AddServices();
-
-            // Add Identity Configurations
-            builder.Services.AddIdentity<AppUser, IdentityRole>()
-                            .AddEntityFrameworkStores<AppIdentityDbContext>();
+            // Registering the app Services by extension methods
+            builder.Services.AddApplicationServices(builder.Configuration);
+            builder.Services.AddIdentityServices(builder.Configuration);
+            builder.Services.AddServiceLayerServices();
             #endregion
 
             var app = builder.Build();
@@ -88,9 +71,11 @@ namespace Talabat.APIs
 
             app.UseHttpsRedirection();
 
-            //app.UseAuthorization();
-
             app.UseStaticFiles();
+
+            app.UseAuthentication();
+
+            app.UseAuthorization();
 
             app.MapControllers(); 
             #endregion

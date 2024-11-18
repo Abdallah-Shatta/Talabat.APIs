@@ -18,6 +18,7 @@ namespace Talabat.APIs.Mapping_Profile
             CreateMap<CustomerBasketDto, CustomerBasket>();
             CreateMap<BasketItemDto, BasketItem>();
             CreateMap<AddressDto, Address>();
+            CreateMap<Core.Entities.Identity.Address, AddressDto>().ReverseMap();
 
             CreateMap<OrderItem, OrderItemDto>()
                 .ForMember(d => d.ProductId, o => o.MapFrom(s => s.Product.ProductId))

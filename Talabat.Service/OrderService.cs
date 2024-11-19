@@ -12,11 +12,13 @@ namespace Talabat.Service
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IBasketRepository _basketRepo;
+        private readonly IPaymentService _paymentService;
 
-        public OrderService(IUnitOfWork unitOfWork, IBasketRepository basketRepo)
+        public OrderService(IUnitOfWork unitOfWork, IBasketRepository basketRepo, IPaymentService paymentService)
         {
             _unitOfWork = unitOfWork;
             _basketRepo = basketRepo;
+            _paymentService = paymentService;
         }
         public async Task<Order?> CreateOrderAsync(string buyerEmail, string basketId, int deliveryMethodId, Address shippingAddress)
         {
@@ -44,8 +46,21 @@ namespace Talabat.Service
             var deliveryMethod = await _unitOfWork.GetRepository<DeliveryMethod>().GetAsync(deliveryMethodId);
 
             // 5- Create Order
-            var order = new Order(buyerEmail, shippingAddress, deliveryMethod, orderItmes, subtotal);
-            await _unitOfWork.GetRepository<Order>().AddAsync(order);
+            var orderRepo = _unitOfWork.GetRepository<Order>();
+
+            // Check if there's an order with an existing payment inetent
+            Specifications<Order> spec = new(o => o.PaymentIntentId == basket.PaymentIntentId);
+            var existingOrder = await orderRepo.GetWithSpecsAsync(spec);
+            if (existingOrder != null)
+            {
+                orderRepo.Delete(existingOrder);
+
+                // this method implicitly update the basket with a new payment intent
+                await _paymentService.CreateOrUpdatePaymentIntent(basketId); 
+            }
+
+            var order = new Order(buyerEmail, shippingAddress, deliveryMethod, orderItmes, subtotal, basket.PaymentIntentId);
+            await orderRepo.AddAsync(order);
 
             // 6- save changes to Database
             var rowsAffected = await _unitOfWork.SaveChangesAsync();

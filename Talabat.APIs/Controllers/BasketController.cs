@@ -27,6 +27,9 @@ namespace Talabat.APIs.Controllers
         {
             await _basketRepo.DeleteBasketAsync(id);
         }
+
+        [ProducesResponseType(typeof(CustomerBasket), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
         [HttpPost]
         public async Task<ActionResult<CustomerBasket>> UpdateBasket(CustomerBasketDto basket)
         {

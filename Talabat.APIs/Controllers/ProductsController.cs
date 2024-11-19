@@ -32,6 +32,8 @@ namespace Talabat.APIs.Controllers
             return Ok(new Pagination<ProductToReturnDto>(specparams.PageIndex, specparams.PageSize, count, data));
         }
 
+        [ProducesResponseType(typeof(ProductToReturnDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
         [HttpGet("{id}")]
         public async Task<ActionResult<ProductToReturnDto>> GetProduct(int id)
         {

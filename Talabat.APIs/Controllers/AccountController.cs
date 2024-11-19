@@ -29,6 +29,8 @@ namespace Talabat.APIs.Controllers
             _mapper = mapper;
         }
 
+        [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status401Unauthorized)]
         [HttpPost("login")]
         public async Task<ActionResult<UserDto>> LogIn(LogInDto model)
         {
@@ -48,6 +50,8 @@ namespace Talabat.APIs.Controllers
             });
         }
 
+        [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
         [HttpPost("register")]
         public async Task<ActionResult<UserDto>> Register(RegisterDto model)
         {
@@ -97,6 +101,8 @@ namespace Talabat.APIs.Controllers
             return Ok(_mapper.Map<AddressDto>(user?.Address));
         }
 
+        [ProducesResponseType(typeof(AddressDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
         [Authorize]
         [HttpPut("address")]
         public async Task<ActionResult<AddressDto>> UpdateAddress(AddressDto updatedAddress)

@@ -21,8 +21,8 @@ namespace Talabat.APIs.Controllers
             _mapper = mapper;
         }
 
-        [ProducesResponseType(typeof(Order), 200)]
-        [ProducesResponseType(typeof(ApiResponse), 400)]
+        [ProducesResponseType(typeof(Order), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
         [HttpPost]
         public async Task<ActionResult<OrderToReturnDto>> CreateOrder(OrderDto orderDto)
         {
@@ -44,8 +44,8 @@ namespace Talabat.APIs.Controllers
             return Ok(_mapper.Map<IReadOnlyList<OrderToReturnDto>>(orders));
         }
 
-        [ProducesResponseType(typeof(Order), 200)]
-        [ProducesResponseType(typeof(ApiResponse), 404)]
+        [ProducesResponseType(typeof(Order), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
         [HttpGet("{id}")]
         public async Task<ActionResult<OrderToReturnDto?>> GetOrderForUser(int id)
         {

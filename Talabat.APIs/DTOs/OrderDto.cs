@@ -8,6 +8,6 @@ namespace Talabat.APIs.DTOs
         public string BasketId { get; set; }
         [Required]
         public int DeliveryMethodId { get; set; }
-        public AddressDto ShippingAddress { get; set; }
+        public AddressDto shipToAddress { get; set; }
     }
 }

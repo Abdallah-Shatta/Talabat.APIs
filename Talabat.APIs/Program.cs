@@ -23,6 +23,15 @@ namespace Talabat.APIs
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            // Congiguring CORS Policy
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AppPolicy", options =>
+                {
+                    options.AllowAnyHeader().AllowAnyMethod().WithOrigins(builder.Configuration["FrontBaseUrl"]!);
+                });
+            });
+
             // Registering the app Services by extension methods
             builder.Services.AddApplicationServices(builder.Configuration);
             builder.Services.AddIdentityServices(builder.Configuration);
@@ -72,6 +81,8 @@ namespace Talabat.APIs
             app.UseHttpsRedirection();
 
             app.UseStaticFiles();
+
+            app.UseCors("AppPolicy");
 
             app.UseAuthentication();
 

@@ -51,7 +51,7 @@ namespace Talabat.Service
             // Check if there's an order with an existing payment inetent
             Specifications<Order> spec = new(o => o.PaymentIntentId == basket.PaymentIntentId);
             var existingOrder = await orderRepo.GetWithSpecsAsync(spec);
-            if (existingOrder != null)
+            if (existingOrder is not null)
             {
                 orderRepo.Delete(existingOrder);
 
